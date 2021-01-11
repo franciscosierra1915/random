@@ -9,16 +9,24 @@ function App() {
   const [fileURL, setFileURL] = useState(null);
   // const [users, setUsers] = useState([]);
 
-  const onChange = async (e) => {
-    const file = e.target.files[0];
-    const storageRef = storage.ref();
-    const fileRef = storageRef.child(file.name);
-    await fileRef.put(file)
-    setFileURL(await fileRef.getDownloadURL())
+  const onChange = () => {
+    const screen = document.getElementById('App');
+    html2canvas(screen)
+    .then( async (canvas) => {
+      const imgData = canvas.toDataURL('image/png'); 
+      const pdf = new jsPDF(); 
+      pdf.addImage(imgData, 'PNG', 0, 0); 
+      // pdf.save("download.pdf");
+      const file = pdf.output("blob");
+      const filePath = Date.now().toString();
+      const storageRef = storage.ref();
+      const fileRef = storageRef.child(`${filePath}.pdf`);
+      await fileRef.put(file)
+      setFileURL(await fileRef.getDownloadURL())
+    });
   };
 
-  const screen = document.getElementById('App');
-  html2canvas(screen).then((canvas) => {const imgData = canvas.toDataURL('image/png'); const pdf = new jsPDF(); pdf.addImage(imgData, 'PNG', 0, 0); pdf.save("download.pdf");});
+
 
   // const onSubmit = (e) => {
   //   e.preventDefault();
@@ -44,9 +52,9 @@ function App() {
   return (
     <div className="App" id="App">
       <button onClick={onChange}>Click!</button>
-      <h1>HELLO WORLD</h1>
+      <h1>HELLO FRANK!</h1>
       <ul>
-      {/* <a href={fileURL}><p>{fileURL}</p></a> */}
+      <a href={fileURL}><p>{fileURL}</p></a>
       </ul>
     </div>
   );
