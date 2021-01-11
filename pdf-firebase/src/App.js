@@ -9,16 +9,16 @@ function App() {
   const [fileURL, setFileURL] = useState(null);
   // const [users, setUsers] = useState([]);
 
-  const onChange = async () => {
-    const screen = document.getElementById('App');
-    html2canvas(screen)
-    .then((canvas) => {
-      const imgData = canvas.toDataURL('image/png'); 
-      const pdf = new jsPDF(); 
-      pdf.addImage(imgData, 'PNG', 0, 0); 
-      // pdf.save("download.pdf");
-    });
+  const onChange = async (e) => {
+    const file = e.target.files[0];
+    const storageRef = storage.ref();
+    const fileRef = storageRef.child(file.name);
+    await fileRef.put(file)
+    setFileURL(await fileRef.getDownloadURL())
   };
+
+  const screen = document.getElementById('App');
+  html2canvas(screen).then((canvas) => {const imgData = canvas.toDataURL('image/png'); const pdf = new jsPDF(); pdf.addImage(imgData, 'PNG', 0, 0); pdf.save("download.pdf");});
 
   // const onSubmit = (e) => {
   //   e.preventDefault();
